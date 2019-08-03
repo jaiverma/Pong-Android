@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.grarak.pong;
+package com.jai.pong;
 
 import android.content.Context;
 import android.graphics.Canvas;

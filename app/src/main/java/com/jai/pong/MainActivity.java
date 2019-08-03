@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.grarak.pong;
+package com.jai.pong;
 
 import android.app.Activity;
 import android.os.Build;

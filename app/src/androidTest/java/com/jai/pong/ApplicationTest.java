@@ -1,4 +1,4 @@
-package com.grarak.pong;
+package com.jai.pong;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

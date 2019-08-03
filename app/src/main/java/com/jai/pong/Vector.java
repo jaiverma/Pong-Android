@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.grarak.pong;
+package com.jai.pong;
 
 /**
  * Created by willi on 08.05.15.

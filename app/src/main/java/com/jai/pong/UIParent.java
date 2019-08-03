@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.grarak.pong;
+package com.jai.pong;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -48,7 +48,7 @@ public class UIParent extends View {
     public UIParent(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
-        setBackgroundColor(getResources().getColor(android.R.color.black));
+        setBackgroundColor(context.getColor(android.R.color.black));
 
         pointOne = new Point(context, PLAYER.ONE);
         pointTwo = new Point(context, PLAYER.TWO);
@@ -136,5 +136,4 @@ public class UIParent extends View {
 
         setMeasuredDimension(width, height);
     }
-
 }
