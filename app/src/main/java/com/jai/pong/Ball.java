@@ -52,7 +52,7 @@ public class Ball extends DrawObject {
     public void draw(Canvas canvas) {
         if (reset) return;
         if (position == null) position = new Vector(getDisplayWidth() / 2, getDisplayHeight() / 2);
-        if (velocity == null) velocity = new Vector(-(getDisplayWidth() / 200), 0);
+        if (velocity == null) velocity = new Vector(-(getDisplayWidth() / 100), 0);
         radius = 5 * getDensity();
 
         position.x += velocity.x;

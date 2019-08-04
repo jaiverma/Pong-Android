@@ -29,7 +29,7 @@ public class Paddle extends DrawObject {
     private final UIParent.PLAYER player;
     private final Paint paint;
 
-    private Float height;
+    public Float height;
     private float length;
     private float thickness;
 
