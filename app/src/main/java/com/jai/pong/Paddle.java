@@ -39,13 +39,14 @@ public class Paddle extends DrawObject {
 
         paint = new Paint();
         paint.setColor(Color.BLUE);
+
+        this.length = getDisplayHeight() / 4;
+        this.thickness = getDisplayWidth() / 80;
     }
 
     @Override
     public void draw(Canvas canvas) {
         if (height == null) height = getDisplayHeight() / 2;
-        length = getDisplayHeight() / 4;
-        thickness = getDisplayWidth() / 80;
 
         float w = 0;
         if (height > getDisplayHeight() / 2) {
@@ -64,6 +65,10 @@ public class Paddle extends DrawObject {
         }
 
         canvas.drawRect(w, h, thickness + w, length + h, paint);
+    }
+
+    public void update(long dt) {
+
     }
 
     public void move(float height) {

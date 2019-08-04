@@ -17,6 +17,7 @@
 package com.jai.pong;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -36,6 +37,11 @@ public class UIParent extends View {
     private final Ball ball;
     private final Paddle paddleOne;
     private final Paddle paddleTwo;
+    private final CheatButton cheatButton;
+    private long previousTime;
+    private long elapsedTime;
+    private boolean isCheat;
+
 
     public UIParent(Context context) {
         this(context, null);
@@ -50,11 +56,13 @@ public class UIParent extends View {
 
         setBackgroundColor(context.getColor(android.R.color.black));
 
+        cheatButton = new CheatButton(context);
         pointOne = new Point(context, PLAYER.ONE);
         pointTwo = new Point(context, PLAYER.TWO);
         paddleOne = new Paddle(context, PLAYER.ONE);
         paddleTwo = new Paddle(context, PLAYER.TWO);
-        ball = new Ball(context, paddleOne, paddleTwo, new Ball.OnPointListener() {
+        isCheat = false;
+        ball = new Ball(context, paddleOne, paddleTwo, isCheat, new Ball.OnPointListener() {
             @Override
             public void playerOne() {
                 pointOne.point++;
@@ -87,13 +95,17 @@ public class UIParent extends View {
 
     @Override
     public void draw(Canvas canvas) {
+        elapsedTime = System.currentTimeMillis() - previousTime;
+//        Log.i("pong", String.valueOf(elapsedTime));
         super.draw(canvas);
 
+        cheatButton.draw(canvas);
         pointOne.draw(canvas);
         pointTwo.draw(canvas);
         paddleOne.draw(canvas);
         paddleTwo.draw(canvas);
         ball.draw(canvas);
+        previousTime = System.currentTimeMillis();
     }
 
     @Override
@@ -103,8 +115,17 @@ public class UIParent extends View {
             for (int a = 0; a < num; a++) {
                 int x = (int) event.getX(event.getPointerId(a));
                 int y = (int) event.getY(event.getPointerId(a));
-                if (x < getMeasuredWidth() / 2) paddleOne.move(y);
-                else paddleTwo.move(y);
+                if (x < getMeasuredWidth() - getMeasuredWidth() / 4) paddleOne.move(y);
+                else {
+                    if (a == 0 && event.getAction() == MotionEvent.ACTION_DOWN) {
+                        ball.toggleCheat();
+                        isCheat = !isCheat;
+                        if (isCheat)
+                            cheatButton.textPaint.setColor(Color.GREEN);
+                        else
+                            cheatButton.textPaint.setColor(Color.RED);
+                    }
+                }
             }
         } catch (Exception ignored) {
         }

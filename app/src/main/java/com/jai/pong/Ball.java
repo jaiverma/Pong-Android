@@ -33,25 +33,27 @@ public class Ball extends DrawObject {
 
     private Vector position;
     private Vector velocity;
-
+    private float radius;
     private boolean gameover;
     private boolean reset;
+    private boolean isCheat;
 
-    public Ball(Context context, Paddle paddleOne, Paddle paddleTwo, OnPointListener onPointListener) {
+    public Ball(Context context, Paddle paddleOne, Paddle paddleTwo, Boolean isCheat, OnPointListener onPointListener) {
         super(context);
         this.paddleOne = paddleOne;
         this.paddleTwo = paddleTwo;
         paint = new Paint();
         paint.setColor(Color.RED);
         this.onPointListener = onPointListener;
+        this.isCheat = isCheat;
     }
 
     @Override
     public void draw(Canvas canvas) {
         if (reset) return;
         if (position == null) position = new Vector(getDisplayWidth() / 2, getDisplayHeight() / 2);
-        if (velocity == null) velocity = new Vector(-(getDisplayWidth() / 192), 0);
-        float radius = 5 * getDensity();
+        if (velocity == null) velocity = new Vector(-(getDisplayWidth() / 200), 0);
+        radius = 5 * getDensity();
 
         position.x += velocity.x;
         position.y += velocity.y;
@@ -74,6 +76,9 @@ public class Ball extends DrawObject {
             }
 
             if (touchedWall(getDisplayHeight(), radius)) velocity.y *= -1;
+
+            if (isCheat)
+                cheat(paddleTwo);
         }
 
         canvas.drawCircle(position.x - radius, position.y, radius, paint);
@@ -83,9 +88,19 @@ public class Ball extends DrawObject {
             else onPointListener.playerOne();
         }
 
+        // if ball is in the area behind the paddles, then game over
         if (position.x - radius < paddleOne.getWidth() - paddleOne.getThickness() ||
                 position.x + radius > getDisplayWidth() - paddleTwo.getWidth() + paddleTwo.getThickness())
             gameover = true;
+    }
+
+    public void cheat(Paddle paddle) {
+        if (position.x + radius > getDisplayWidth() - paddle.getWidth() - paddle.getThickness())
+            paddle.move(position.y);
+    }
+
+    public void ai(Paddle paddle) {
+        // TODO: beatable game ai
     }
 
     public void reset() {
@@ -116,16 +131,25 @@ public class Ball extends DrawObject {
             if (position.y > hitboxes[i][0] && position.y < hitboxes[i][1])
                 switch (i) {
                     case 0:
-                        return -4;
+                        android.util.Log.i("pong-debug", "case 0");
+                        return -12;
                     case 4:
-                        return 4;
+                        android.util.Log.i("pong-debug", "case 4");
+                        return 12;
                     case 1:
-                        return -2;
+                        android.util.Log.i("pong-debug", "case 1");
+                        return -8;
                     case 3:
-                        return 2;
+                        android.util.Log.i("pong-debug", "case 3");
+                        return 8;
                 }
         }
+        android.util.Log.i("pong-debug", "case 2");
         return 0;
+    }
+
+    public void toggleCheat() {
+        isCheat = !isCheat;
     }
 
     public interface OnPointListener {
@@ -133,5 +157,4 @@ public class Ball extends DrawObject {
 
         void playerTwo();
     }
-
 }
