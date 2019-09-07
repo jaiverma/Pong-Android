@@ -56,6 +56,7 @@ public class UIParent extends View {
     private ArrayList<Float> cheat_data;
     private ArrayList<Float> data;
     private long timeCounter;
+    private int marker = 0;
 
 
     public UIParent(Context context) {
@@ -116,30 +117,6 @@ public class UIParent extends View {
 
     @Override
     public void draw(Canvas canvas) {
-//        try {
-//            Log.i("pong-file", Environment.getExternalStorageDirectory() + ".");
-//            FileReader r1 = new FileReader(getContext().getFilesDir() + "/data.json");
-//            FileReader r2 = new FileReader(getContext().getFilesDir() + "/cheat_data.json");
-//            FileWriter w1 = new FileWriter(Environment.getExternalStorageDirectory() + "/data.json");
-//            FileWriter w2 = new FileWriter(Environment.getExternalStorageDirectory() + "/cheat_data.json");
-//            char[] buf = new char[1024];
-//            int len;
-//            while ((len = r1.read(buf)) > 0) {
-//                w1.write(buf, 0, len);
-//            }
-//            w1.flush();
-//            w1.close();
-//
-//            while ((len = r2.read(buf)) > 0) {
-//                w2.write(buf, 0, len);
-//            }
-//            w2.flush();
-//            w2.close();
-//            System.exit(0);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
         elapsedTime = System.currentTimeMillis() - previousTime;
         timeCounter += elapsedTime;
         if (timeCounter >= 200) {
@@ -149,11 +126,12 @@ public class UIParent extends View {
                 cheat_data.add(paddleTwo.getHeight());
                 timeCounter = 0;
 
-                if (data.size() == 1000) {
+                if (data.size() == 50) {
                     try {
                         Log.i("pong-file", getContext().getFilesDir() + ".");
-                        FileWriter w1 = new FileWriter(getContext().getFilesDir() + "/data.json");
-                        FileWriter w2 = new FileWriter(getContext().getFilesDir() + "/cheat_data.json");
+                        FileWriter w1 = new FileWriter(getContext().getFilesDir() + "/data_" + marker + ".json");
+                        FileWriter w2 = new FileWriter(getContext().getFilesDir() + "/cheat_data_" + marker + ".json");
+                        marker += 1;
                         String data_s = new Gson().toJson(data);
                         String cheat_data_s = new Gson().toJson(cheat_data);
                         Log.i("pong-file", data_s);
@@ -163,7 +141,9 @@ public class UIParent extends View {
                         w2.flush();
                         w1.close();
                         w2.close();
-                        System.exit(0);
+                        data.clear();
+                        cheat_data.clear();
+                        // System.exit(0);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

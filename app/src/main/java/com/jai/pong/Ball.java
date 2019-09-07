@@ -45,7 +45,7 @@ public class Ball extends DrawObject {
         paint = new Paint();
         paint.setColor(Color.RED);
         this.onPointListener = onPointListener;
-        this.isCheat = isCheat;
+        this.isCheat = true;
     }
 
     @Override
