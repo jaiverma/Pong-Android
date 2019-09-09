@@ -69,7 +69,7 @@ public class MainActivity extends Activity {
                 while (true)
                     try {
                         Thread.sleep(1000);
-                        log("FPS: " + fps);
+                        // log("FPS: " + fps);
                         fps = 0;
                     } catch (InterruptedException e) {
                         e.printStackTrace();

@@ -28,9 +28,14 @@ import android.view.View;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Writer;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 
 /**
@@ -115,6 +120,23 @@ public class UIParent extends View {
         });
     }
 
+    private void writeData(ArrayList<Float> data, String filePath) {
+        try {
+            FileOutputStream f = new FileOutputStream(filePath);
+            ByteBuffer byteBuffer = ByteBuffer.allocate(4);
+            byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+            for (float i : data) {
+                byteBuffer.clear();
+                byteBuffer.putFloat(i);
+                f.write(byteBuffer.array());
+            }
+            f.flush();
+            f.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void draw(Canvas canvas) {
         elapsedTime = System.currentTimeMillis() - previousTime;
@@ -127,36 +149,19 @@ public class UIParent extends View {
                 timeCounter = 0;
 
                 if (data.size() == 50) {
-                    try {
-                        Log.i("pong-file", getContext().getFilesDir() + ".");
-                        FileWriter w1 = new FileWriter(getContext().getFilesDir() + "/data_" + marker + ".json");
-                        FileWriter w2 = new FileWriter(getContext().getFilesDir() + "/cheat_data_" + marker + ".json");
-                        marker += 1;
-                        String data_s = new Gson().toJson(data);
-                        String cheat_data_s = new Gson().toJson(cheat_data);
-                        Log.i("pong-file", data_s);
-                        w1.write(data_s);
-                        w2.write(cheat_data_s);
-                        w1.flush();
-                        w2.flush();
-                        w1.close();
-                        w2.close();
-                        data.clear();
-                        cheat_data.clear();
-                        // System.exit(0);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    Log.i("pong-file", getContext().getFilesDir() + ".");
+                    String cheatDataPath = getContext().getFilesDir() + "/data_" + marker + ".raw";
+                    String noCheatDataPath = getContext().getFilesDir() + "/cheat_data_" + marker + ".raw";
+                    writeData(data, noCheatDataPath);
+                    writeData(cheat_data, cheatDataPath);
+                    marker += 1;
+                    data.clear();
+                    cheat_data.clear();
                 }
             }
         }
 
         super.draw(canvas);
-
-//        while (true) {
-//            if (magic != 0xdeadbeef)
-//                break;
-//        }
 
         cheatButton.draw(canvas);
         pointOne.draw(canvas);
