@@ -45,8 +45,8 @@ public class UIParent extends View {
     private final Point pointOne;
     private final Point pointTwo;
     private final Ball ball;
-    private final Paddle paddleOne;
-    private final Paddle paddleTwo;
+    public final Paddle paddleOne;
+    public final Paddle paddleTwo;
     private final CheatButton cheatButton;
     private long previousTime;
     private long elapsedTime;
@@ -117,46 +117,38 @@ public class UIParent extends View {
 
     @Override
     public void draw(Canvas canvas) {
-        elapsedTime = System.currentTimeMillis() - previousTime;
-        timeCounter += elapsedTime;
-        if (timeCounter >= 200) {
-            Log.i("pong-file", "Adding data: " + String.valueOf(data.size()));
-            if (paddleOne.height != null && paddleTwo.height != null) {
-                data.add(paddleOne.getHeight());
-                cheat_data.add(paddleTwo.getHeight());
-                timeCounter = 0;
-
-                if (data.size() == 50) {
-                    try {
-                        Log.i("pong-file", getContext().getFilesDir() + ".");
-                        FileWriter w1 = new FileWriter(getContext().getFilesDir() + "/data_" + marker + ".json");
-                        FileWriter w2 = new FileWriter(getContext().getFilesDir() + "/cheat_data_" + marker + ".json");
-                        marker += 1;
-                        String data_s = new Gson().toJson(data);
-                        String cheat_data_s = new Gson().toJson(cheat_data);
-                        Log.i("pong-file", data_s);
-                        w1.write(data_s);
-                        w2.write(cheat_data_s);
-                        w1.flush();
-                        w2.flush();
-                        w1.close();
-                        w2.close();
-                        data.clear();
-                        cheat_data.clear();
-                        // System.exit(0);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
+//        elapsedTime = System.currentTimeMillis() - previousTime;
+//        timeCounter += elapsedTime;
+//        if (timeCounter >= 200) {
+//            if (paddleOne.height != null && paddleTwo.height != null) {
+//                data.add(paddleOne.getHeight());
+//                cheat_data.add(paddleTwo.getHeight());
+//                timeCounter = 0;
+//
+//                if (data.size() == 50) {
+//                    try {
+//                        FileWriter w1 = new FileWriter(getContext().getFilesDir() + "/data_" + marker + ".json");
+//                        FileWriter w2 = new FileWriter(getContext().getFilesDir() + "/cheat_data_" + marker + ".json");
+//                        marker += 1;
+//                        String data_s = new Gson().toJson(data);
+//                        String cheat_data_s = new Gson().toJson(cheat_data);
+//                        w1.write(data_s);
+//                        w2.write(cheat_data_s);
+//                        w1.flush();
+//                        w2.flush();
+//                        w1.close();
+//                        w2.close();
+//                        data.clear();
+//                        cheat_data.clear();
+//                        // System.exit(0);
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        }
 
         super.draw(canvas);
-
-//        while (true) {
-//            if (magic != 0xdeadbeef)
-//                break;
-//        }
 
         cheatButton.draw(canvas);
         pointOne.draw(canvas);
@@ -174,16 +166,17 @@ public class UIParent extends View {
             for (int a = 0; a < num; a++) {
                 int x = (int) event.getX(event.getPointerId(a));
                 int y = (int) event.getY(event.getPointerId(a));
-                if (x < getMeasuredWidth() - getMeasuredWidth() / 4) paddleOne.move(y);
+                if (x < getMeasuredWidth() / 2) paddleOne.move(y);
                 else {
-                    if (a == 0 && event.getAction() == MotionEvent.ACTION_DOWN) {
-                        ball.toggleCheat();
-                        isCheat = !isCheat;
-                        if (isCheat)
-                            cheatButton.textPaint.setColor(Color.GREEN);
-                        else
-                            cheatButton.textPaint.setColor(Color.RED);
-                    }
+//                    if (a == 0 && event.getAction() == MotionEvent.ACTION_DOWN) {
+//                        ball.toggleCheat();
+//                        isCheat = !isCheat;
+//                        if (isCheat)
+//                            cheatButton.textPaint.setColor(Color.GREEN);
+//                        else
+//                            cheatButton.textPaint.setColor(Color.RED);
+//                    }
+                    paddleTwo.move(y);
                 }
             }
         } catch (Exception ignored) {

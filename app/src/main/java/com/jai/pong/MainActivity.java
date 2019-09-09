@@ -22,6 +22,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import java.io.File;
+
 /**
  * Created by willi on 08.05.15.
  */
@@ -69,12 +71,29 @@ public class MainActivity extends Activity {
                 while (true)
                     try {
                         Thread.sleep(1000);
-                        log("FPS: " + fps);
+//                        log("FPS: " + fps);
                         fps = 0;
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                         break;
                     }
+            }
+        }).start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                File f = new File("/data/local/tmp/server");
+//                if (f.exists()) {
+//                    Log.i("hathi", "Starting server");
+//                    final NetServer server = new NetServer(uiParent.paddleOne, uiParent.paddleTwo, 9876);
+//                    server.start();
+//                }
+//                else {
+                    Log.i("hathi", "Starting client");
+                    final NetClient client = new NetClient(uiParent.paddleTwo, uiParent.paddleOne, "192.168.0.3", 9876);
+                    client.start();
+//                }
             }
         }).start();
     }

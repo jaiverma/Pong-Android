@@ -45,7 +45,7 @@ public class Ball extends DrawObject {
         paint = new Paint();
         paint.setColor(Color.RED);
         this.onPointListener = onPointListener;
-        this.isCheat = true;
+        this.isCheat = false;
     }
 
     @Override
@@ -131,20 +131,15 @@ public class Ball extends DrawObject {
             if (position.y > hitboxes[i][0] && position.y < hitboxes[i][1])
                 switch (i) {
                     case 0:
-                        android.util.Log.i("pong-debug", "case 0");
                         return -12;
                     case 4:
-                        android.util.Log.i("pong-debug", "case 4");
                         return 12;
                     case 1:
-                        android.util.Log.i("pong-debug", "case 1");
                         return -8;
                     case 3:
-                        android.util.Log.i("pong-debug", "case 3");
                         return 8;
                 }
         }
-        android.util.Log.i("pong-debug", "case 2");
         return 0;
     }
 
