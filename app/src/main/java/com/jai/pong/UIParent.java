@@ -149,7 +149,7 @@ public class UIParent extends View {
         pointTwo = new Point(context, PLAYER.TWO);
         paddleOne = new Paddle(context, PLAYER.ONE);
         paddleTwo = new Paddle(context, PLAYER.TWO);
-        isCheat = true;
+        isCheat = false;
 
         magic = 0xdeadbeef;
         timeCounter = 0;
@@ -239,7 +239,7 @@ public class UIParent extends View {
 
         super.draw(canvas);
 
-        cheatButton.draw(canvas);
+//        cheatButton.draw(canvas);
         pointOne.draw(canvas);
         pointTwo.draw(canvas);
         paddleOne.draw(canvas);
@@ -255,16 +255,9 @@ public class UIParent extends View {
             for (int a = 0; a < num; a++) {
                 int x = (int) event.getX(event.getPointerId(a));
                 int y = (int) event.getY(event.getPointerId(a));
-                if (x < getMeasuredWidth() - getMeasuredWidth() / 4) paddleOne.move(y);
+                if (x < getMeasuredWidth() / 2) paddleOne.move(y);
                 else {
-                    if (a == 0 && event.getAction() == MotionEvent.ACTION_DOWN) {
-                        ball.toggleCheat();
-                        isCheat = !isCheat;
-                        if (isCheat)
-                            cheatButton.textPaint.setColor(Color.GREEN);
-                        else
-                            cheatButton.textPaint.setColor(Color.RED);
-                    }
+                    paddleTwo.move(y);
                 }
             }
         } catch (Exception ignored) {
