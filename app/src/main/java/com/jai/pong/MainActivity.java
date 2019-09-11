@@ -28,6 +28,7 @@ import android.view.View;
 public class MainActivity extends Activity {
 
     private int fps = 0;
+    private UIParent uiParent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +41,10 @@ public class MainActivity extends Activity {
             decorView.setSystemUiVisibility(uiOptions);
         }
 
-        final UIParent uiParent = new UIParent(this);
+        uiParent = new UIParent(this);
         setContentView(uiParent);
+
+        uiParent.doBindService();
 
         new Thread(new Runnable() {
             @Override
@@ -83,4 +86,9 @@ public class MainActivity extends Activity {
         Log.i("Pong", message);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        uiParent.doUnbindService();
+    }
 }

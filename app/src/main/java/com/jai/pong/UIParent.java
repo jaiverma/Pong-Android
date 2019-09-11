@@ -16,17 +16,24 @@
 
 package com.jai.pong;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.graphics.Canvas;
+import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -63,6 +70,66 @@ public class UIParent extends View {
     private long timeCounter;
     private int marker = 0;
 
+    // Message IPC
+    Messenger mService = null;
+    final Messenger mMessenger = new Messenger(new IncomingHandler());
+    public static final int MSG_INFERENCE = 1;
+    boolean mIsBound;
+
+    class IncomingHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MSG_INFERENCE:
+                    Log.d("qace-message", "MSG_INFERENCE: " + msg.arg1);
+                    break;
+                default:
+                    super.handleMessage(msg);
+            }
+        }
+    }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            mService = new Messenger(service);
+            Log.d("qace-message", "Connected");
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            mService = null;
+            Log.d("qace-message", "Disconnected");
+        }
+    };
+
+    void doBindService() {
+        Intent i = new Intent();
+        i.setComponent(new ComponentName("com.example.qace", "com.example.qace.QACEService"));
+        getContext().bindService(i, mConnection, Context.BIND_AUTO_CREATE);
+        mIsBound = true;
+    }
+
+    void doUnbindService() {
+        if (mIsBound) {
+            Log.d("qace-message", "doUnbindService");
+            getContext().unbindService(mConnection);
+            mIsBound = false;
+        }
+    }
+
+    void doSendMsg(Bundle b) {
+        if (mIsBound) {
+            Log.i("qace-message", "doSendMsg");
+            try {
+                Message msg = Message.obtain(null, MSG_INFERENCE);
+                msg.replyTo = mMessenger;
+                msg.obj = b;
+                mService.send(msg);
+            } catch (RemoteException e) {
+            }
+        }
+    }
 
     public UIParent(Context context) {
         this(context, null);
@@ -137,23 +204,32 @@ public class UIParent extends View {
         }
     }
 
+    private float[] makeFloat(ArrayList<Float> data) {
+        float[] f = new float[data.size()];
+        int i = 0;
+        for (Float d : data) {
+            f[i++] = d;
+        }
+        return f;
+    }
+
     @Override
     public void draw(Canvas canvas) {
         elapsedTime = System.currentTimeMillis() - previousTime;
         timeCounter += elapsedTime;
         if (timeCounter >= 200) {
-            Log.i("pong-file", "Adding data: " + String.valueOf(data.size()));
+//            Log.i("pong-file", "Adding data: " + String.valueOf(data.size()));
             if (paddleOne.height != null && paddleTwo.height != null) {
                 data.add(paddleOne.getHeight());
                 cheat_data.add(paddleTwo.getHeight());
                 timeCounter = 0;
 
                 if (data.size() == 50) {
-                    Log.i("pong-file", getContext().getFilesDir() + ".");
-                    String cheatDataPath = getContext().getFilesDir() + "/data_" + marker + ".raw";
-                    String noCheatDataPath = getContext().getFilesDir() + "/cheat_data_" + marker + ".raw";
-                    writeData(data, noCheatDataPath);
-                    writeData(cheat_data, cheatDataPath);
+                    Log.d("qace-message", "Sending data");
+                    Bundle b = new Bundle();
+//                    b.putFloatArray("pong-data", makeFloat(data));
+                    b.putFloatArray("pong-data", makeFloat(cheat_data));
+                    doSendMsg(b);
                     marker += 1;
                     data.clear();
                     cheat_data.clear();
